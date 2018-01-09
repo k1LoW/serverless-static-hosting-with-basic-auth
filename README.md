@@ -19,7 +19,7 @@ $ npm install
 $ AWS_PROFILE=XxxxxXXX WEBSITE_S3_BUCKET_NAME=sls-static-basic npm run deploy
 ```
 
-### Synchronize src/* and Website
+### Synchronize src/* -> Website
 
 ```
 $ AWS_PROFILE=XxxxxXXX WEBSITE_S3_BUCKET_NAME=sls-static-basic npm run sync
