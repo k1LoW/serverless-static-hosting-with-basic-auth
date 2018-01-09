@@ -1,0 +1,22 @@
+{
+  "name": "serverless-static-hosting-with-basic-auth",
+  "version": "0.1.0",
+  "description": "Serverless boilerplate for Static website hosting with Basic authentication",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "sls deploy -v",
+    "remove": "sls remove",
+    "sync": "sls sync",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "serverless"
+  ],
+  "author": "k1LoW <k1lowxb@gmail.com> (https://github.com/k1LoW)",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^1.25.0",
+    "serverless-plugin-cloudfront-lambda-edge": "^1.0.0",
+    "serverless-s3-sync": "^1.3.0"
+  }
+}

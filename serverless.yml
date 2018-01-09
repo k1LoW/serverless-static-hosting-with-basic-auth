@@ -1,0 +1,111 @@
+service: ${self:provider.environment.WEBSITE_S3_BUCKET_NAME}
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+
+  stage: dev
+  region: us-east-1 # Lambda@Edge function must be us-east-1
+
+  environment:
+    WEBSITE_S3_BUCKET_NAME: ${env:WEBSITE_S3_BUCKET_NAME, 'sls-static-basic'}
+
+plugins:
+  - serverless-s3-sync
+  - serverless-plugin-cloudfront-lambda-edge
+
+custom:
+  s3Sync:
+    - bucketName: ${self:provider.environment.WEBSITE_S3_BUCKET_NAME}
+      localDir: src
+
+functions:
+  basicAuth:
+    name: '${self:provider.environment.WEBSITE_S3_BUCKET_NAME}-viewer-request'
+    handler: handler.basicAuth
+    memorySize: 128
+    timeout: 1
+    lambdaAtEdge:
+      distribution: WebsiteDistribution
+      eventType: 'viewer-request'
+
+resources:
+  Resources:
+    WebsiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.WEBSITE_S3_BUCKET_NAME}
+        AccessControl: Private
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+    WebsiteBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: { Ref: WebsiteBucket }
+        PolicyDocument:
+          Statement:
+            -
+              Action:
+                - "s3:GetObject"
+              Effect: Allow
+              Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { Ref : WebsiteBucket }, "/*" ] ]  }
+              Principal:
+                AWS: { "Fn::Join" : [" ", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity", { Ref: WebsiteOriginAccessIdentity } ] ] }
+    WebsiteOriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: "CloudFrontOriginAccessIdentity for ${self:service}-${self:provider.stage}"
+    WebsiteDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          DefaultCacheBehavior:
+            AllowedMethods: [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ]
+            CachedMethods:  [ "GET", "HEAD", "OPTIONS" ]
+            TargetOriginId: WebsiteBucketOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            DefaultTTL: 0
+            MaxTTL: 0
+            MinTTL: 0
+            Compress: true
+            ForwardedValues:
+              QueryString: true
+              Cookies:
+                Forward: 'all'
+          CustomErrorResponses:
+            -
+              ErrorCode: '403'
+              ErrorCachingMinTTL: 1
+            -
+              ErrorCode: '404'
+              ErrorCachingMinTTL: 1
+            -
+              ErrorCode: '500'
+              ErrorCachingMinTTL: 1
+            -
+              ErrorCode: '502'
+              ErrorCachingMinTTL: 1
+            -
+              ErrorCode: '503'
+              ErrorCachingMinTTL: 1
+            -
+              ErrorCode: '504'
+              ErrorCachingMinTTL: 1
+          DefaultRootObject: 'index.html'
+          Enabled: true
+          PriceClass: 'PriceClass_100'
+          HttpVersion: 'http2'
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
+          Origins:
+            -
+              Id: 'WebsiteBucketOrigin'
+              DomainName: { 'Fn::GetAtt': [ WebsiteBucket, DomainName ] }
+              S3OriginConfig:
+                OriginAccessIdentity: { "Fn::Join" : ["", ["origin-access-identity/cloudfront/", { Ref: WebsiteOriginAccessIdentity } ] ]  }
+  Outputs:
+    WebsiteURL:
+      Value: { "Fn::Join" : ["", ["https://", { "Fn::GetAtt" : [ WebsiteDistribution, DomainName ] } ] ] }
+      Description: "URL for website via CloudFront"
