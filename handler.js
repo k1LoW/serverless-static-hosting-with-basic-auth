@@ -10,12 +10,16 @@ module.exports.basicAuth = (event, context, callback) => {
     if (authorization) {
         const encoded = authorization[0].value.split(' ')[1];
         const userAndPassword = Buffer.from(encoded, 'base64').toString();
-        for (const user in BASIC_AUTH_USERS) {
+        const result = Object.keys(BASIC_AUTH_USERS).filter((user) => {
             const password = BASIC_AUTH_USERS[user];
             if (`${user}:${password}` === userAndPassword) {
-                callback(null, request);
-                return;
+                return true;
             }
+            return false;
+        });
+        if (result.length > 0) {
+            callback(null, request);
+            return;
         }
     }
 
