@@ -3,7 +3,7 @@
 ## Architecture
 
 ```
-[CloudFront (with Lambda@Edge)] - Restrict Bucket Access -> [S3 Origin Bucket]
+[CloudFront (with Lambda@Edge)] -Restrict Bucket Access-> [S3 Origin Bucket]
 ```
 
 ## Usage

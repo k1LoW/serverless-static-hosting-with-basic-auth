@@ -15,6 +15,7 @@
   "author": "k1LoW <k1lowxb@gmail.com> (https://github.com/k1LoW)",
   "license": "MIT",
   "devDependencies": {
+    "octopublish": "^0.5.0",
     "serverless": "^1.25.0",
     "serverless-plugin-cloudfront-lambda-edge": "^1.0.0",
     "serverless-s3-sync": "^1.3.0"
