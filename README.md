@@ -8,9 +8,11 @@
 
 ## Usage
 
-### Config
+### Create .htpasswd
 
-Set Basic authentication config ( `handler.js` )
+```
+$ htpasswd -c -b ./.htpasswd username password
+```
 
 ### Deploy
 

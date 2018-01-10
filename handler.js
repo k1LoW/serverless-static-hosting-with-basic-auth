@@ -1,27 +1,12 @@
-const BASIC_AUTH_USERS = {
-    user: 'pass'
-};
+const fs = require('fs');
+const htpasswd = require('htpasswd-auth');
+
+const file = fs.readFileSync(`${__dirname}/.htpasswd`).toString();
 
 module.exports.basicAuth = (event, context, callback) => {
     const request = event.Records[0].cf.request;
     const headers = request.headers;
     const authorization = headers.authorization || headers.Authorization;
-
-    if (authorization) {
-        const encoded = authorization[0].value.split(' ')[1];
-        const userAndPassword = Buffer.from(encoded, 'base64').toString();
-        const result = Object.keys(BASIC_AUTH_USERS).filter((user) => {
-            const password = BASIC_AUTH_USERS[user];
-            if (`${user}:${password}` === userAndPassword) {
-                return true;
-            }
-            return false;
-        });
-        if (result.length > 0) {
-            callback(null, request);
-            return;
-        }
-    }
 
     const response = {
         status: '401',
@@ -33,5 +18,18 @@ module.exports.basicAuth = (event, context, callback) => {
         body: '401 Authorization Required'
     };
 
-    callback(null, response);
+    if (authorization) {
+        const encoded = authorization[0].value.split(' ')[1];
+        const userAndPassword = Buffer.from(encoded, 'base64').toString().split(':');
+        htpasswd.authenticate(userAndPassword[0], userAndPassword[1], file)
+            .then((auth) => {
+                if (auth) {
+                    callback(null, request);
+                } else {
+                    callback(null, response);
+                }
+            });
+    } else {
+        callback(null, response);
+    }
 };

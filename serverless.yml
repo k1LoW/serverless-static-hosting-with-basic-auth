@@ -19,6 +19,15 @@ custom:
     - bucketName: ${self:provider.environment.WEBSITE_S3_BUCKET_NAME}
       localDir: src
 
+package:
+  include:
+    - .htpasswd
+  exclude:
+    - src/*
+    - test/*
+    - package.json
+    - README.md
+
 functions:
   basicAuth:
     name: '${self:provider.environment.WEBSITE_S3_BUCKET_NAME}-viewer-request'
