@@ -11,8 +11,8 @@ provider:
     WEBSITE_S3_BUCKET_NAME: ${env:WEBSITE_S3_BUCKET_NAME, 'sls-static-basic'}
 
 plugins:
-  - serverless-s3-sync
   - serverless-plugin-cloudfront-lambda-edge
+  - serverless-s3-sync
 
 custom:
   s3Sync:

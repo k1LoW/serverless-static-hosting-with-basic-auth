@@ -6,13 +6,24 @@
 [CloudFront (with Lambda@Edge)] -Restrict Bucket Access-> [S3 Origin Bucket] <-Sync- [Local src/*]
 ```
 
+### Using plugin
+
+- [serverless-plugin-cloudfront-lambda-edge](https://github.com/silvermine/serverless-plugin-cloudfront-lambda-edge)
+- [serverless-s3-sync](https://github.com/k1LoW/serverless-s3-sync)
+
 ## Usage
 
-### Config
+### Install boilerplate
+
+```
+$ git clone https://github.com/k1LoW/serverless-static-hosting-with-basic-auth.git ./my-static-page
+```
+
+### Set Basic authentication USERNAME:PASS
 
 Set Basic authentication config ( `handler.js` )
 
-### Deploy
+### Deploy stack
 
 ```
 $ npm install
@@ -25,7 +36,7 @@ $ AWS_PROFILE=XxxxxXXX WEBSITE_S3_BUCKET_NAME=sls-static-basic npm run deploy
 $ AWS_PROFILE=XxxxxXXX WEBSITE_S3_BUCKET_NAME=sls-static-basic npm run sync
 ```
 
-### Remove
+### Remove stack
 
 ```
 $ AWS_PROFILE=XxxxxXXX WEBSITE_S3_BUCKET_NAME=sls-static-basic npm run remove
