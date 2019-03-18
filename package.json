@@ -1,6 +1,6 @@
 {
   "name": "serverless-static-hosting-with-basic-auth",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Serverless boilerplate for Static website hosting with Basic authentication",
   "main": "index.js",
   "scripts": {
