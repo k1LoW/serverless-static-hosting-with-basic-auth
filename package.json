@@ -6,7 +6,7 @@
   "scripts": {
     "deploy": "sls deploy -v",
     "remove": "sls remove",
-    "sync": "sls sync",
+    "sync": "sls s3sync",
     "test": "nyc ava -v",
     "lint": "eslint ."
   },
